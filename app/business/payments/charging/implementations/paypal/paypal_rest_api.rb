@@ -146,7 +146,6 @@ class PaypalRestApi
   end
 
   private
-
     def purchase_unit(purchase_unit_info)
       currency = purchase_unit_info[:currency]
 

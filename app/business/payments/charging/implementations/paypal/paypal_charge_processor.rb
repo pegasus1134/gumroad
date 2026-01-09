@@ -794,7 +794,13 @@ class PaypalChargeProcessor
     return [] unless dispute.present?
 
     dispute.purchases.filter_map do |purchase|
-      purchase.license_key if purchase.license_key.present?
+      next unless purchase.license.present?
+
+      license_info = "Serial: #{purchase.license.serial}"
+      if purchase.license.uses.to_i > 0
+        license_info += " (Activations: #{purchase.license.uses})"
+      end
+      license_info
     end
   end
 

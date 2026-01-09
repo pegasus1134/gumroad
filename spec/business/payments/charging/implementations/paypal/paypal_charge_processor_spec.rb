@@ -1538,24 +1538,24 @@ describe PaypalChargeProcessor, :vcr do
     let(:purchase) { create(:purchase) }
     let(:dispute) do
       create(:dispute,
-        purchase: purchase,
-        charge_processor_dispute_id: "PP-D-12345",
-        reason: Dispute::REASON_PRODUCT_NOT_RECEIVED
+             purchase: purchase,
+             charge_processor_dispute_id: "PP-D-12345",
+             reason: Dispute::REASON_PRODUCT_NOT_RECEIVED
       )
     end
     let(:dispute_evidence) do
       create(:dispute_evidence,
-        dispute: dispute,
-        customer_name: "John Doe",
-        customer_email: "john@example.com",
-        customer_purchase_ip: "192.168.1.1",
-        product_description: "Digital Product - Online Course",
-        billing_address: "123 Main St, City, State 12345",
-        shipping_address: "456 Oak Ave, Town, State 67890",
-        shipping_carrier: "ups",
-        shipping_tracking_number: "1Z999AA10123456784",
-        refund_policy_disclosure: "30-day refund policy displayed at checkout",
-        reason_for_winning: "Customer accessed the product 15 times after purchase"
+             dispute: dispute,
+             customer_name: "John Doe",
+             customer_email: "john@example.com",
+             customer_purchase_ip: "192.168.1.1",
+             product_description: "Digital Product - Online Course",
+             billing_address: "123 Main St, City, State 12345",
+             shipping_address: "456 Oak Ave, Town, State 67890",
+             shipping_carrier: "ups",
+             shipping_tracking_number: "1Z999AA10123456784",
+             refund_policy_disclosure: "30-day refund policy displayed at checkout",
+             reason_for_winning: "Customer accessed the product 15 times after purchase"
       )
     end
     let(:paypal_rest_api) { instance_double(PaypalRestApi) }
@@ -1622,12 +1622,11 @@ describe PaypalChargeProcessor, :vcr do
       end
 
       it "raises ChargeProcessorInvalidRequestError" do
-        expect {
+        expect do
           processor.fight_chargeback("capture_123", dispute_evidence)
-        }.to raise_error(ChargeProcessorInvalidRequestError)
+        end.to raise_error(ChargeProcessorInvalidRequestError)
       end
     end
-
   end
 
   describe "#build_paypal_evidences" do
@@ -1640,9 +1639,9 @@ describe PaypalChargeProcessor, :vcr do
       end
       let(:dispute_evidence) do
         build(:dispute_evidence,
-          dispute: dispute,
-          shipping_carrier: "fedex",
-          shipping_tracking_number: "123456789"
+              dispute: dispute,
+              shipping_carrier: "fedex",
+              shipping_tracking_number: "123456789"
         )
       end
 
@@ -1662,9 +1661,9 @@ describe PaypalChargeProcessor, :vcr do
       end
       let(:dispute_evidence) do
         build(:dispute_evidence,
-          dispute: dispute,
-          refund_refusal_explanation: "Refund was already processed",
-          refund_policy_disclosure: "30-day policy"
+              dispute: dispute,
+              refund_refusal_explanation: "Refund was already processed",
+              refund_policy_disclosure: "30-day policy"
         )
       end
 
@@ -1683,8 +1682,8 @@ describe PaypalChargeProcessor, :vcr do
       end
       let(:dispute_evidence) do
         build(:dispute_evidence,
-          dispute: dispute,
-          reason_for_winning: "Customer verified purchase via email"
+              dispute: dispute,
+              reason_for_winning: "Customer verified purchase via email"
         )
       end
 
@@ -1720,17 +1719,17 @@ describe PaypalChargeProcessor, :vcr do
     let(:processor) { described_class.new }
     let(:dispute_evidence) do
       build(:dispute_evidence,
-        customer_name: "John Doe",
-        customer_email: "john@example.com",
-        customer_purchase_ip: "192.168.1.1",
-        product_description: "Online Course",
-        billing_address: "123 Main St",
-        shipping_address: "456 Oak Ave",
-        shipping_carrier: "ups",
-        shipping_tracking_number: "1Z123",
-        access_activity_log: "Accessed 15 times",
-        refund_policy_disclosure: "30-day policy",
-        reason_for_winning: "Customer used the product"
+            customer_name: "John Doe",
+            customer_email: "john@example.com",
+            customer_purchase_ip: "192.168.1.1",
+            product_description: "Online Course",
+            billing_address: "123 Main St",
+            shipping_address: "456 Oak Ave",
+            shipping_carrier: "ups",
+            shipping_tracking_number: "1Z123",
+            access_activity_log: "Accessed 15 times",
+            refund_policy_disclosure: "30-day policy",
+            reason_for_winning: "Customer used the product"
       )
     end
 
