@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "gumroad": {
+      "command": "node",
+      "args": ["dist/mcp.js"],
+      "cwd": "${workspaceFolder}/cli"
+    }
+  }
+}

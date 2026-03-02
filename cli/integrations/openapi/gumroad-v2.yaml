@@ -1,0 +1,210 @@
+openapi: 3.1.0
+info:
+  title: Gumroad API
+  version: "2.0"
+  description: Gumroad API v2 — manage products, sales, subscribers, payouts, and more.
+servers:
+  - url: https://api.gumroad.com/v2
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+paths:
+  /user:
+    get:
+      summary: Get authenticated user
+      operationId: getUser
+      responses:
+        "200":
+          description: User profile
+  /products:
+    get:
+      summary: List all products
+      operationId: listProducts
+      responses:
+        "200":
+          description: Product list
+  /products/{product_id}:
+    get:
+      summary: Get product details
+      operationId: getProduct
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product details
+    delete:
+      summary: Delete a product
+      operationId: deleteProduct
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted
+  /products/{product_id}/enable:
+    put:
+      summary: Enable (publish) a product
+      operationId: enableProduct
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product enabled
+  /products/{product_id}/disable:
+    put:
+      summary: Disable (unpublish) a product
+      operationId: disableProduct
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product disabled
+  /sales:
+    get:
+      summary: List sales
+      operationId: listSales
+      parameters:
+        - name: after
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: product_id
+          in: query
+          schema:
+            type: string
+        - name: email
+          in: query
+          schema:
+            type: string
+        - name: page_key
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sales list
+  /sales/{sale_id}:
+    get:
+      summary: Get sale details
+      operationId: getSale
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sale details
+  /sales/{sale_id}/mark_as_shipped:
+    put:
+      summary: Mark sale as shipped
+      operationId: markAsShipped
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sale marked as shipped
+  /sales/{sale_id}/refund:
+    put:
+      summary: Refund a sale
+      operationId: refundSale
+      parameters:
+        - name: sale_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sale refunded
+  /licenses/verify:
+    post:
+      summary: Verify a license key
+      operationId: verifyLicense
+      responses:
+        "200":
+          description: License verification result
+  /licenses/enable:
+    put:
+      summary: Enable a license key
+      operationId: enableLicense
+      responses:
+        "200":
+          description: License enabled
+  /licenses/disable:
+    put:
+      summary: Disable a license key
+      operationId: disableLicense
+      responses:
+        "200":
+          description: License disabled
+  /licenses/decrement_uses_count:
+    put:
+      summary: Decrement license uses
+      operationId: decrementLicense
+      responses:
+        "200":
+          description: License uses decremented
+  /payouts:
+    get:
+      summary: List payouts
+      operationId: listPayouts
+      responses:
+        "200":
+          description: Payout list
+  /resource_subscriptions:
+    get:
+      summary: List webhooks
+      operationId: listResourceSubscriptions
+      responses:
+        "200":
+          description: Webhook list
+    put:
+      summary: Create webhook
+      operationId: createResourceSubscription
+      responses:
+        "200":
+          description: Webhook created
+  /resource_subscriptions/{subscription_id}:
+    delete:
+      summary: Delete webhook
+      operationId: deleteResourceSubscription
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Webhook deleted

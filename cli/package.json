@@ -1,0 +1,35 @@
+{
+  "name": "@pegasus1134/gumroad-cli",
+  "version": "0.1.2",
+  "description": "AI-native CLI for Gumroad — manage your store from the terminal",
+  "type": "module",
+  "bin": {
+    "gumroad": "./dist/cli.js",
+    "gumroad-cli": "./dist/cli.js",
+    "gumroad-mcp": "./dist/mcp.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "commander": "^13.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "~5.5.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
