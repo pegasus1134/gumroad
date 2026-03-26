@@ -82,11 +82,6 @@ class AudienceMember < ApplicationRecord
       created_at_sql = created_at_relation.to_sql
     end
 
-    if params[:bought_from]
-      country_relation = where(seller_id:).where("JSON_CONTAINS(details->'$.purchases[*].country', ?)", %("#{params[:bought_from]}"))
-      country_sql = country_relation.to_sql
-    end
-
     if params[:affiliate_product_ids]
       affiliates_relation = where(seller_id:)
       json_contains = "JSON_CONTAINS(details->'$.affiliates[*].product_id', ?)"
@@ -100,6 +95,7 @@ class AudienceMember < ApplicationRecord
       && (params[:paid_more_than_cents] || params[:paid_less_than_cents] || params[:created_after] || params[:created_before] || params[:bought_from]))
     filter_purchases_when ||= (params[:paid_more_than_cents] && params[:paid_less_than_cents])
     filter_purchases_when ||= (params[:created_after] && params[:created_before])
+    filter_purchases_when ||= params[:bought_from].present?
     if filter_purchases_when || with_ids
       json_filter = where(seller_id:)
       json_table = <<~SQL.squish
@@ -178,7 +174,6 @@ class AudienceMember < ApplicationRecord
       not_bought_variants_sql,
       prices_sql,
       created_at_sql,
-      country_sql,
       affiliates_sql,
       json_filter_sql,
     ].compact

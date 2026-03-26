@@ -207,6 +207,22 @@ RSpec.describe AudienceMember, :freeze_time do
       expect(filtered(bought_from: "Mexico")).to eq([])
     end
 
+    it "filters by country combined with product and variant filters" do
+      member1 = create_member(purchases: [{ "product_id" => 1, "variant_ids" => [10], "country" => "Germany" }])
+      member2 = create_member(purchases: [{ "product_id" => 1, "variant_ids" => [10], "country" => "France" }])
+      member3 = create_member(purchases: [
+                                { "product_id" => 1, "variant_ids" => [10], "country" => "Germany" },
+                                { "product_id" => 2, "variant_ids" => [20], "country" => "France" }
+                              ])
+      member4 = create_member(purchases: [{ "product_id" => 2, "variant_ids" => [20], "country" => "Germany" }])
+
+      expect(filtered(bought_from: "Germany", bought_product_ids: [1])).to eq([member1, member3])
+      expect(filtered(bought_from: "Germany", bought_variant_ids: [10])).to eq([member1, member3])
+      expect(filtered(bought_from: "France", bought_product_ids: [2])).to eq([member3])
+      expect(filtered(bought_from: "Germany", bought_product_ids: [2])).to eq([member4])
+      expect(filtered(bought_from: "Germany", bought_product_ids: [1], bought_variant_ids: [10])).to eq([member1, member3])
+    end
+
     it "filters by affiliate products" do
       member1 = create_member(affiliates: [{ "product_id" => 1 }])
       member2 = create_member(affiliates: [{ "product_id" => 2 }])
