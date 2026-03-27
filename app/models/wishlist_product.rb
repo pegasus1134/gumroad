@@ -36,10 +36,8 @@ class WishlistProduct < ApplicationRecord
     end
 
     def versioned_product_has_variant
-      if (product.skus_enabled && product.skus.alive.not_is_default_sku.count > 1) || product.alive_variants.present?
-        if variant.blank?
-          errors.add(:base, "Wishlist product must have variant specified for versioned product")
-        end
+      if product.has_multiple_variants? && variant.blank?
+        errors.add(:base, "Wishlist product must have variant specified for versioned product")
       end
     end
 

@@ -90,6 +90,36 @@ describe Bundles::ContentController, inertia: true do
       expect(new_bundle_products.third.deleted_at).to be_nil
     end
 
+    context "when a soft-deleted bundle product's product later gains variants" do
+      it "saves successfully when adding an unrelated product" do
+        product_a = create(:product, user: seller)
+        product_b = create(:product, user: seller)
+        product_c = create(:product, user: seller)
+
+        # Create bundle with A and B
+        create(:bundle_product, bundle:, product: product_a)
+        create(:bundle_product, bundle:, product: product_b)
+
+        # Remove A (soft-delete), then A gains variants
+        bundle.bundle_products.find_by(product: product_a).mark_deleted!
+        category = create(:variant_category, link: product_a)
+        create_list(:variant, 2, variant_category: category)
+
+        # Add C to the bundle — should not fail
+        put :update, params: {
+          bundle_id: bundle.external_id,
+          products: [
+            { product_id: product_b.external_id, quantity: 1 },
+            { product_id: product_c.external_id, quantity: 1 }
+          ]
+        }
+
+        expect(response).to redirect_to(edit_bundle_content_path(bundle.external_id))
+        expect(flash[:notice]).to eq("Changes saved!")
+        expect(bundle.reload.bundle_products.alive.pluck(:product_id)).to contain_exactly(product_b.id, product_c.id)
+      end
+    end
+
     context "adding a call to a bundle" do
       let(:call_product) { create(:call_product, user: seller) }
 

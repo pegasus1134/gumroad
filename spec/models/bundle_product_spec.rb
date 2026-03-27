@@ -70,6 +70,30 @@ describe BundleProduct do
       end
     end
 
+    context "when the product has a single alive variant" do
+      before do
+        bundle_product.product = create(:product_with_digital_versions, user: bundle_product.bundle.user)
+        bundle_product.product.alive_variants.last.mark_deleted!
+        bundle_product.variant = nil
+      end
+
+      it "is valid without a variant" do
+        expect(bundle_product).to be_valid
+      end
+    end
+
+    context "when the product has skus_enabled but only a default sku" do
+      before do
+        bundle_product.product.skus_enabled = true
+        bundle_product.product.save!
+        bundle_product.variant = nil
+      end
+
+      it "is valid without a variant" do
+        expect(bundle_product).to be_valid
+      end
+    end
+
     context "when the variant doesn't belong to the product" do
       before do
         bundle_product.variant = create(:variant)
@@ -121,6 +145,17 @@ describe BundleProduct do
       it "adds an error" do
         expect(duplicate_bundle_product).to_not be_valid
         expect(duplicate_bundle_product.errors.full_messages.first).to eq("Product is already in bundle")
+      end
+    end
+
+    context "when the only existing bundle product for that product is soft-deleted" do
+      before do
+        bundle_product.mark_deleted!
+      end
+
+      it "allows creating a new bundle product for the same product" do
+        new_bp = build(:bundle_product, product: bundle_product.product, bundle: bundle_product.bundle)
+        expect(new_bp).to be_valid
       end
     end
 

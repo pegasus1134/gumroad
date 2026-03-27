@@ -130,6 +130,19 @@ describe WishlistProduct do
       end
     end
 
+    context "when the product has a single alive variant" do
+      let(:product) { create(:product_with_digital_versions) }
+
+      before do
+        product.alive_variants.last.mark_deleted!
+        wishlist_product.variant = nil
+      end
+
+      it "is valid without a variant" do
+        expect(wishlist_product).to be_valid
+      end
+    end
+
     context "when the variant doesn't belong to the product" do
       before do
         wishlist_product.variant = create(:variant)
