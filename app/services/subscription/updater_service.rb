@@ -380,7 +380,7 @@ class Subscription::UpdaterService
     end
 
     def same_plan_and_price?
-      same_plan? && (!pwyw? || same_pwyw_price?) && same_quantity?
+      same_plan? && (!pwyw? || same_pwyw_price?) && same_quantity? && same_tier_price?
     end
 
     def same_plan?
@@ -416,6 +416,15 @@ class Subscription::UpdaterService
 
     def same_pwyw_price?
       pwyw? && original_purchase.displayed_price_cents == params[:perceived_price_cents]
+    end
+
+    def same_tier_price?
+      return true unless is_resubscribing && tiered_membership?
+      tier = subscription.tier
+      return true unless tier&.apply_price_changes_to_existing_memberships?
+      tier_price = tier.prices.alive.is_buy.find_by(recurrence: price&.recurrence || subscription.recurrence)
+      return true unless tier_price
+      subscription.current_subscription_price_cents / original_purchase.quantity == tier_price.price_cents
     end
 
     def tiered_membership?
