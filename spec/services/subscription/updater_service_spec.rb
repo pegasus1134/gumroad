@@ -473,6 +473,35 @@ describe Subscription::UpdaterService, :vcr do
             expect(last_purchase.displayed_price_cents).to eq new_price_cents
           end
 
+          it "does not update the price when the effective date is still in the future" do
+            @original_tier.update!(subscription_price_change_effective_date: 10.days.from_now.to_date)
+            old_price_cents = @original_tier_quarterly_price.price_cents
+            @original_tier_quarterly_price.update!(price_cents: old_price_cents + 500)
+
+            params = {
+              price_id: @quarterly_product_price.external_id,
+              variants: [@original_tier.external_id],
+              quantity: 1,
+              use_existing_card: true,
+              perceived_price_cents: old_price_cents,
+              perceived_upgrade_price_cents: old_price_cents,
+            }
+
+            expect do
+              Subscription::UpdaterService.new(
+                subscription: @subscription,
+                gumroad_guid: @gumroad_guid,
+                params:,
+                logged_in_user: @user,
+                remote_ip: @remote_ip,
+              ).perform
+            end.to change { @subscription.reload.purchases.successful.not_is_original_subscription_purchase.count }.by(1)
+
+            last_purchase = @subscription.last_successful_charge
+            expect(last_purchase.id).not_to eq @original_purchase.id
+            expect(last_purchase.displayed_price_cents).to eq old_price_cents
+          end
+
           it "does not update the price when apply_price_changes_to_existing_memberships is disabled" do
             @original_tier.update!(apply_price_changes_to_existing_memberships: false)
             old_price_cents = @original_tier_quarterly_price.price_cents

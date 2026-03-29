@@ -422,6 +422,8 @@ class Subscription::UpdaterService
       return true unless is_resubscribing && tiered_membership?
       tier = subscription.tier
       return true unless tier&.apply_price_changes_to_existing_memberships?
+      effective_date = tier.subscription_price_change_effective_date
+      return true if effective_date.present? && effective_date > Date.today
       tier_price = tier.prices.alive.is_buy.find_by(recurrence: price&.recurrence || subscription.recurrence)
       return true unless tier_price
       subscription.current_subscription_price_cents / original_purchase.quantity == tier_price.price_cents
