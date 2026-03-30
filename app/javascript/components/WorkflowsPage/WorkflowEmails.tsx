@@ -590,7 +590,7 @@ const EmailPreview = ({
 
   React.useEffect(() => {
     if (!isEditing) return;
-    const timeoutId = setTimeout(() => selfRef.current?.scrollIntoView({ behavior: "smooth" }), 500);
+    const timeoutId = setTimeout(() => selfRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 500);
     return () => clearTimeout(timeoutId);
   }, [isEditing]);
 
